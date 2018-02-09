@@ -1,0 +1,79 @@
+import numpy as np
+
+def pml():
+    
+    from sklearn import datasets
+    iris = datasets.load_iris()
+    X = iris.data[:,[0,1,2,3]] #petal length , petal width,sepal length and sepal width are assigned to X
+    y = iris.target #Corresponding class labels of the flower species are assigned to y
+    
+    from sklearn.cross_validation import train_test_split
+    X_train, X_test, y_train, y_test = train_test_split(X,y,test_size=0.3,random_state=0) #randomly splits the X and y arrays 
+    
+    from sklearn.preprocessing import StandardScaler
+    sc = StandardScaler() #initiated standardscaler object
+    sc.fit(X_train) #fit estimates the sample mean and standard deviation
+    X_train_std = sc.transform(X_train) #standardzes data using the above estimated parameters
+    X_test_std = sc.transform(X_test) 
+    
+    #---------------------------------------------------------------
+    from sklearn.linear_model import Perceptron #imports perceptron algorithm 
+    ppn = Perceptron(max_iter=40, eta0=0.1, random_state=0) 
+    ppn.fit(X_train_std, y_train)
+    print("Perceptron")
+    y_pred = ppn.predict(X_test_std)
+    print('Misclassified samples: %d' % (y_test != y_pred).sum()) #misclassified samles
+    from sklearn.metrics import accuracy_score
+    print('Percent Accuracy: %.2f\n' % (accuracy_score(y_test, y_pred)*100))# classification accuracy in percentage (%)
+
+    #---------------------------------------------------------------
+    from sklearn.linear_model import LogisticRegression # imports Logistic Regression algorithm 
+    lr = LogisticRegression(C=1000.0, random_state=0)
+    lr.fit(X_train_std, y_train) 
+    print("Logistic Regression")
+    y_pred_lr = lr.predict(X_test_std)
+    print('Misclassified samples: %d' % (y_test != y_pred_lr).sum())
+    from sklearn.metrics import accuracy_score
+    print('Percent Accuracy: %.2f\n' % (accuracy_score(y_test, y_pred_lr)*100))
+    
+    #---------------------------------------------------------------
+    from sklearn.svm import SVC # imports Support Vector Machine algorithm 
+    svm = SVC(kernel='linear', C=1.0, random_state=0)
+    svm.fit(X_train_std, y_train)
+    print("Support Vector Machine")
+    y_pred_svm = svm.predict(X_test_std)
+    print('Misclassified samples: %d' % (y_test != y_pred_svm).sum())
+    from sklearn.metrics import accuracy_score
+    print('Percent Accuracy: %.2f\n' % (accuracy_score(y_test, y_pred_svm)*100))
+    
+    #---------------------------------------------------------------
+    from sklearn.tree import DecisionTreeClassifier # imports Decision Tree Learning algorithm 
+    tree = DecisionTreeClassifier(criterion='entropy',max_depth=3 ,random_state=0)
+    tree.fit(X_train,y_train)
+    print("Decision Tree Learning")
+    y_pred_tree = tree.predict(X_test_std)
+    print('Misclassified samples: %d' % (y_test != y_pred_tree).sum())
+    from sklearn.metrics import accuracy_score
+    print('Percent Accuracy: %.2f \n' % (accuracy_score(y_test, y_pred_tree)*100))
+    
+    #---------------------------------------------------------------
+    from sklearn.ensemble import RandomForestClassifier # imports Random Forest algorithm 
+    forest = RandomForestClassifier(criterion='entropy', n_estimators=10 ,random_state=1, n_jobs=2)
+    forest.fit(X_train,y_train)
+    print("Random Forest")
+    y_pred_forest = forest.predict(X_test_std)
+    print('Misclassified samples: %d' % (y_test != y_pred_forest).sum()) 
+    from sklearn.metrics import accuracy_score
+    print('Percent Accuracy: %.2f\n' % (accuracy_score(y_test, y_pred_forest)*100))
+    
+    #---------------------------------------------------------------
+    from sklearn.neighbors import KNeighborsClassifier # imports K Nearest Neighbors algorithm 
+    knn = KNeighborsClassifier(n_neighbors=5,p=2,metric='minkowski')
+    knn.fit(X_train_std,y_train)
+    print("K Nearest Neighbors")
+    y_pred_knn = knn.predict(X_test_std)
+    print('Misclassified samples: %d' % (y_test != y_pred_knn).sum())
+    from sklearn.metrics import accuracy_score
+    print('Percent Accuracy: %.2f\n' % (accuracy_score(y_test, y_pred_knn)*100))
+
+print(pml())
